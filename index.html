@@ -8,6 +8,7 @@
   <meta property="og:title" content="ReGround: Restoring Visual Grounding in Multi-Step Reasoning" />
   <meta property="og:description" content="A two-stage framework that teaches VLMs to self-diagnose grounding failures and selectively re-examine the image. ACM MM 2026." />
   <meta property="og:type" content="website" />
+  <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -53,10 +54,11 @@
       <!-- Authors -->
       <div class="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-2 text-lg font-medium text-slate-700">
         <a href="mailto:peng.lei@mail.ustc.edu.cn" class="hover:text-brand-600 transition">Lei Peng</a>
-        <a href="mailto:shuailv@mail.ustc.edu.cn" class="hover:text-brand-600 transition">Shuai Lv</a>
-        <a href="mailto:whuustc@ustc.edu.cn" class="hover:text-brand-600 transition">Wei Hu</a>
+        <a href="mailto:shuailv@mail.ustc.edu.cn" class="hover:text-brand-600 transition">Shuai Lv<sup>†</sup></a>
+        <a href="mailto:whuustc@ustc.edu.cn" class="hover:text-brand-600 transition">Wei Hu<sup>†</sup></a>
       </div>
       <p class="mt-2 text-slate-500">University of Science and Technology of China (USTC)</p>
+      <p class="mt-1 text-sm text-slate-400">† Corresponding authors</p>
 
       <!-- Action buttons -->
       <div class="mt-9 flex flex-wrap justify-center gap-3">
@@ -67,8 +69,8 @@
           <svg viewBox="0 0 16 16" class="w-4 h-4 fill-current" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
           Code
         </a>
-        <a href="#" class="inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-slate-700 transition">
-          <span>📄</span> Paper <span class="text-slate-400 font-normal">(Coming Soon)</span>
+        <a href="https://openreview.net/forum?id=9VITDTpKLk" class="inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-slate-700 transition">
+          <span>📄</span> Paper <span class="text-slate-400 font-normal">(OpenReview)</span>
         </a>
         <a href="https://huggingface.co/SESPOIR/ReGround-Qwen2.5-VL-7B" class="inline-flex items-center gap-2 rounded-full bg-amber-400 text-slate-900 px-5 py-2.5 text-sm font-semibold shadow-sm hover:bg-amber-300 transition">
           <span>🤗</span> Model
@@ -84,8 +86,8 @@
       <div class="rounded-2xl bg-brand-50 ring-1 ring-brand-100 p-6 sm:p-8">
         <p class="text-lg leading-relaxed text-slate-700">
           Vision-language models gradually <strong>lose visual grounding</strong> as reasoning chains grow longer.
-          <strong>ReGround</strong> teaches a model to <strong>self-diagnose</strong> when it needs fresh visual evidence and emit a
-          <code class="reground-tag">&lt;reground&gt;</code> cue, which re-injects the original image so the model can revise its reasoning
+          <strong>ReGround</strong> teaches a model to <strong>self-diagnose</strong> when visual re-examination is needed and emit a
+          <code class="reground-tag">&lt;reground&gt;</code> cue, which re-presents the same visual tokens at new sequence positions so the model can revise its reasoning
           before answering &mdash; <strong>no external tools or architectural changes</strong>.
         </p>
       </div>
@@ -98,12 +100,12 @@
         <p>
           Vision-Language Models (VLMs) often lose visual grounding during multi-step reasoning: as reasoning chains grow longer,
           later inference steps rely increasingly on language priors rather than image evidence. We identify a consistent
-          benchmark-level signature of this degradation: across <strong>2,510 re-examined samples</strong> from four benchmarks,
-          attention entropy over image tokens typically decreases during Round&nbsp;1 and rises again after image re-injection.
+          benchmark-level signature associated with this degradation: across <strong>2,510 re-examined samples</strong> from four benchmarks,
+          attention entropy over image tokens typically decreases during Round&nbsp;1 and rises again after the same image is re-injected at a new sequence position.
         </p>
         <p>
           However, we find that effective visual re-examination requires two complementary ingredients:
-          <strong>fresh image re-injection</strong> and <strong>targeted self-diagnosis</strong>. Without targeted diagnosis,
+          <strong>visual-token re-presentation</strong> and <strong>targeted self-diagnosis</strong>. Without targeted diagnosis,
           re-examination can even hurt performance, whereas accurate self-diagnosis yields substantial gains &mdash; indicating that
           diagnostic quality is a key factor in whether re-examination helps or hurts.
         </p>
@@ -113,7 +115,7 @@
           <em>capability bootstrapping</em>, a stronger variant from the same model family provides diagnostic scaffolding only
           during data construction, while the policy model learns to diagnose autonomously at inference time and retains most of
           the assisted gains. Experiments on <strong>eight benchmarks across two VLM backbones</strong> demonstrate consistent
-          gains, especially on visually intensive multi-step reasoning tasks, while incurring only modest inference overhead
+          gains, particularly on visually intensive multi-step tasks that exhibit grounding drift, while incurring only modest inference overhead
           relative to tool-augmented baselines.
         </p>
       </div>
@@ -126,7 +128,7 @@
         <div class="rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-brand-200 transition">
           <div class="text-brand-600 text-2xl mb-3">📉</div>
           <h3 class="font-semibold text-slate-900 mb-2">Grounding decay &amp; recovery</h3>
-          <p class="text-slate-600 text-sm leading-relaxed">Across 2,510 samples from four benchmarks, image-token attention entropy narrows in <strong>98.0%</strong> of cases during reasoning and recovers after image re-injection &mdash; a robust benchmark-level phenomenon.</p>
+          <p class="text-slate-600 text-sm leading-relaxed">Across 2,510 samples from four benchmarks, image-token attention entropy narrows in <strong>98.0%</strong> of cases during reasoning and usually rebounds after image re-injection &mdash; a supporting mechanism signature rather than a direct grounding metric.</p>
         </div>
         <div class="rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-brand-200 transition">
           <div class="text-brand-600 text-2xl mb-3">🎯</div>
@@ -136,7 +138,7 @@
         <div class="rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-brand-200 transition">
           <div class="text-brand-600 text-2xl mb-3">⚖️</div>
           <h3 class="font-semibold text-slate-900 mb-2">Triggering policy analysis</h3>
-          <p class="text-slate-600 text-sm leading-relaxed">Over-triggering actively damages accuracy through negative flips on correct answers, whereas under-triggering is safe but wasteful &mdash; giving practical guidance for calibrating the trade-off.</p>
+          <p class="text-slate-600 text-sm leading-relaxed">Over-triggering actively damages accuracy through negative flips on correct answers, whereas under-triggering is computationally conservative but leaves recoverable errors uncorrected.</p>
         </div>
         <div class="rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-brand-200 transition">
           <div class="text-brand-600 text-2xl mb-3">🧰</div>
@@ -166,8 +168,17 @@
         <div class="rounded-xl bg-slate-50 p-6 ring-1 ring-slate-100">
           <div class="text-sm font-semibold text-brand-600 mb-1">Stage 2</div>
           <h3 class="font-semibold text-slate-900 mb-2">GRPO refinement</h3>
-          <p class="text-slate-600 text-sm leading-relaxed">Group Relative Policy Optimization with an <strong>asymmetric reward</strong> (self-diagnosis, accuracy, format) calibrates the triggering policy, preventing the over-triggering that our analysis shows actively damages accuracy.</p>
+          <p class="text-slate-600 text-sm leading-relaxed">Group Relative Policy Optimization with an <strong>asymmetric reward</strong> (structural re-grounding, post-parser accuracy, format) calibrates the triggering policy without an online model judge.</p>
         </div>
+      </div>
+      <div class="mt-6 rounded-xl border border-brand-100 bg-brand-50 p-6 text-sm leading-relaxed text-slate-700">
+        <h3 class="font-semibold text-slate-900 mb-3">Camera-ready clarifications</h3>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>The frozen deterministic encoder yields identical visual tokens for identical preprocessing; ReGround re-presents them at new positions under updated language context rather than creating fresh embeddings.</li>
+          <li><code class="reground-tag">I_reg</code> checks exactly one non-empty, well-formed <code class="reground-tag">&lt;reground&gt;</code> span at the template position. <code class="reground-tag">I_acc</code> uses the same VLMEvalKit parsing stage as final scoring; <code>answers_match</code> is only the deterministic post-parser comparison.</li>
+          <li>Qwen2.5-VL-72B-Instruct is used only for Stage-1 routing. It flags 22.9% of correct Round-1 responses as ungrounded under four criteria; it is never used during GRPO, inference, or benchmark scoring. Human agreement was not measured.</li>
+          <li>ReGround targets cue-localizable grounding drift, not general visual search or fine-grained localization. Re-injection adds about 518 input tokens per image and scales roughly linearly for multi-image/video inputs.</li>
+        </ul>
       </div>
     </section>
 
@@ -229,7 +240,7 @@
       <p class="mt-3 text-sm text-slate-500">
         ReGround attains the best performance on five of eight benchmarks, including all three math-reasoning benchmarks
         (MathVista&nbsp;+3.8, MathVision&nbsp;+2.8, MathVerse&nbsp;+4.5) and HallusionBench&nbsp;+6.8, while staying within 0.3 points of the
-        strongest baseline on the rest. Gains transfer to Qwen3-VL-8B (+1.1 to +3.4 across all eight benchmarks) without re-tuning.
+        strongest baseline on the rest. Gains transfer to a second backbone, Qwen3-VL-8B (+1.1 to +3.4 across all eight benchmarks), without re-tuning; this is cross-backbone evidence, not a scale-invariance claim.
       </p>
 
       <!-- Efficiency -->
@@ -252,7 +263,7 @@
           </tbody>
         </table>
       </div>
-      <p class="mt-3 text-sm text-slate-500">Sample-count-weighted average over MathVista, MathVision, and HallusionBench (2,255 samples). ReGround is both more accurate and substantially faster than the tool-augmented Thyme baseline.</p>
+      <p class="mt-3 text-sm text-slate-500">Sample-count-weighted average over MathVista, MathVision, and HallusionBench (2,255 samples). Non-triggered cases take 0.95s and triggered cases 2.31s; at a 31.7% weighted trigger rate, the overall average is 1.39s. The roughly 45% trigger rate in the exploration-preference sweep is a separate reward-calibration operating point.</p>
     </section>
 
     <!-- ===================== BIBTEX ===================== -->
@@ -263,8 +274,8 @@
   title     = {ReGround: Restoring Visual Grounding in Multi-Step
                Reasoning through Self-Diagnosis and Visual Re-Examination},
   author    = {Peng, Lei and Lv, Shuai and Hu, Wei},
-  booktitle = {Proceedings of the 34th ACM International Conference
-               on Multimedia (ACM MM '26)},
+  booktitle = {Proceedings of the 35th ACM International Conference
+               on Multimedia (MM '26)},
   year      = {2026},
   note      = {To appear}
 }</code></pre>
@@ -289,6 +300,7 @@
       <p>&copy; 2026 ReGround Authors &middot; Released under the Apache License 2.0.</p>
       <div class="flex items-center gap-5">
         <a href="https://github.com/sespoir/ReGround" class="hover:text-brand-600 transition">Code</a>
+        <a href="https://openreview.net/forum?id=9VITDTpKLk" class="hover:text-brand-600 transition">Paper</a>
         <a href="https://huggingface.co/SESPOIR/ReGround-Qwen2.5-VL-7B" class="hover:text-brand-600 transition">Model</a>
         <a href="#abstract" class="hover:text-brand-600 transition">Abstract</a>
       </div>

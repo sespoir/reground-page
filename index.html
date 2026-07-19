@@ -128,7 +128,7 @@
         <div class="rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-brand-200 transition">
           <div class="text-brand-600 text-2xl mb-3">📉</div>
           <h3 class="font-semibold text-slate-900 mb-2">Grounding decay &amp; recovery</h3>
-          <p class="text-slate-600 text-sm leading-relaxed">Across 2,510 samples from four benchmarks, image-token attention entropy narrows in <strong>98.0%</strong> of cases during reasoning and usually rebounds after image re-injection &mdash; a supporting mechanism signature rather than a direct grounding metric.</p>
+          <p class="text-slate-600 text-sm leading-relaxed">Across 2,510 samples from four benchmarks, image-token attention entropy narrows in <strong>98.0%</strong> of cases during reasoning and usually rebounds after image re-injection.</p>
         </div>
         <div class="rounded-xl border border-slate-200 p-6 hover:shadow-md hover:border-brand-200 transition">
           <div class="text-brand-600 text-2xl mb-3">🎯</div>
@@ -170,15 +170,6 @@
           <h3 class="font-semibold text-slate-900 mb-2">GRPO refinement</h3>
           <p class="text-slate-600 text-sm leading-relaxed">Group Relative Policy Optimization with an <strong>asymmetric reward</strong> (structural re-grounding, post-parser accuracy, format) calibrates the triggering policy without an online model judge.</p>
         </div>
-      </div>
-      <div class="mt-6 rounded-xl border border-brand-100 bg-brand-50 p-6 text-sm leading-relaxed text-slate-700">
-        <h3 class="font-semibold text-slate-900 mb-3">Camera-ready clarifications</h3>
-        <ul class="list-disc pl-5 space-y-2">
-          <li>The frozen deterministic encoder yields identical visual tokens for identical preprocessing; ReGround re-presents them at new positions under updated language context rather than creating fresh embeddings.</li>
-          <li><code class="reground-tag">I_reg</code> checks exactly one non-empty, well-formed <code class="reground-tag">&lt;reground&gt;</code> span at the template position. <code class="reground-tag">I_acc</code> uses the same VLMEvalKit parsing stage as final scoring; <code>answers_match</code> is only the deterministic post-parser comparison.</li>
-          <li>Qwen2.5-VL-72B-Instruct is used only for Stage-1 routing. It flags 22.9% of correct Round-1 responses as ungrounded under four criteria; it is never used during GRPO, inference, or benchmark scoring. Human agreement was not measured.</li>
-          <li>ReGround targets cue-localizable grounding drift, not general visual search or fine-grained localization. Re-injection adds about 518 input tokens per image and scales roughly linearly for multi-image/video inputs.</li>
-        </ul>
       </div>
     </section>
 
@@ -240,7 +231,7 @@
       <p class="mt-3 text-sm text-slate-500">
         ReGround attains the best performance on five of eight benchmarks, including all three math-reasoning benchmarks
         (MathVista&nbsp;+3.8, MathVision&nbsp;+2.8, MathVerse&nbsp;+4.5) and HallusionBench&nbsp;+6.8, while staying within 0.3 points of the
-        strongest baseline on the rest. Gains transfer to a second backbone, Qwen3-VL-8B (+1.1 to +3.4 across all eight benchmarks), without re-tuning; this is cross-backbone evidence, not a scale-invariance claim.
+        strongest baseline on the rest. Gains transfer to a second backbone, Qwen3-VL-8B (+1.1 to +3.4 across all eight benchmarks), without re-tuning.
       </p>
 
       <!-- Efficiency -->
@@ -263,7 +254,7 @@
           </tbody>
         </table>
       </div>
-      <p class="mt-3 text-sm text-slate-500">Sample-count-weighted average over MathVista, MathVision, and HallusionBench (2,255 samples). Non-triggered cases take 0.95s and triggered cases 2.31s; at a 31.7% weighted trigger rate, the overall average is 1.39s. The roughly 45% trigger rate in the exploration-preference sweep is a separate reward-calibration operating point.</p>
+      <p class="mt-3 text-sm text-slate-500">Sample-count-weighted average over MathVista, MathVision, and HallusionBench (2,255 samples).</p>
     </section>
 
     <!-- ===================== BIBTEX ===================== -->
